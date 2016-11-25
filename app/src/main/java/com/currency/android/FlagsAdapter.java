@@ -52,7 +52,7 @@ class FlagsAdapter extends BaseAdapter implements ICallback {
         mDataBaseRef = dBRef;
         mStorageRef = StorageRef;
         mRates = rates;
-        
+
 //        ValueEventListener mVEventListener = new ValueEventListener() {
 //            @Override
 //            public void onDataChange(DataSnapshot dataSnapshot) {
@@ -142,19 +142,20 @@ class FlagsAdapter extends BaseAdapter implements ICallback {
                 // END loading Flags from firebase Storage
                 viewHolder.countryName.setText(countryName);
 
-                /********************************/
+                /****************Very very wrong and need to be replaced ASAP****************/
                 AsyncHttpClient mAsyncHttpClient = new AsyncHttpClient();
                 mAsyncHttpClient.get(mContext, getcurrencyExchangeUrl("EGP", currencyCode), new AsyncHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        Log.d(TAG, "onSuccess: " + currencyCode);
                         Gson gson = new Gson();
                         CurrencyModel currencyModel = gson.fromJson(new String(responseBody), CurrencyModel.class);
                         final String rate = currencyModel.getQuery().getResults().getRates().getRate();
-                        viewHolder.exchangeRate.setText(rate);
+                        viewHolder.exchangeRate.setText(rate + " " +currencyCode);
                     }
-
                     @Override
                     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                        Log.d(TAG, "onFailure: ");
                     }
                 });
                 /**************/

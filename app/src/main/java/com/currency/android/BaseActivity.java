@@ -37,7 +37,7 @@ public class BaseActivity extends AppCompatActivity {
         return "https://openexchangerates.org/api/currencies.json";
     }
 
-    public static String getListUrl(String base, ArrayList<String> currencyCode) {
+    protected String getListUrl(String base, ArrayList<String> currencyCode) {
         Log.d(TAG, "getListUrl: "+ currencyCode);
         return "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20" +
                 "yahoo.finance.xchange%20where%20pair%20in%20" +
