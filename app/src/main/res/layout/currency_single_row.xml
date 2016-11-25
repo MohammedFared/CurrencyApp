@@ -24,8 +24,9 @@
 
     <ImageView
         android:id="@+id/img_flag"
+        android:layout_centerHorizontal="true"
         android:layout_below="@id/tv_currency"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:src="@drawable/common_google_signin_btn_icon_dark"/>
+        tools:src="@drawable/eg"/>
 </RelativeLayout>
