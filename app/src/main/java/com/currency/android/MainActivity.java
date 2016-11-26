@@ -1,14 +1,11 @@
 package com.currency.android;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
@@ -121,7 +118,6 @@ public class MainActivity extends BaseActivity implements TextWatcher {
 
                     String id = currencyModel.getQuery().getResults().getRates().getId();
                     final String rate = currencyModel.getQuery().getResults().getRates().getRate();
-                    Toast.makeText(MainActivity.this, "id = " + id + ", rate = " + rate, Toast.LENGTH_LONG).show();
 
                     et_number_base.addTextChangedListener(new TextWatcher() {
                         @Override
@@ -209,23 +205,6 @@ public class MainActivity extends BaseActivity implements TextWatcher {
         actv_base.setText(actv_target.getText().toString());
         actv_target.setText(meddler);
         onCurrencyChange();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.action_currency_codes:
-                startActivity(new Intent(this, CurrenciesGuide.class));
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override

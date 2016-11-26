@@ -1,7 +1,6 @@
 package com.currency.android;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.currency.android.Models.CurrencyModel;
-import com.currency.android.Models.CurrencyModelList.QueryBean.ResultsBean.RatesBean;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,18 +29,16 @@ import static com.currency.android.BaseActivity.getcurrencyExchangeUrl;
 /**
  * Currency Created by Mohammed Fareed on 11/4/2016.
  */
-class FlagsAdapter extends BaseAdapter implements ICallback {
+class FlagsAdapter extends BaseAdapter {
     private ValueEventListener flagsEventListener;
     private ArrayList<String> mRates = new ArrayList<>();
-    private String TAG = "FlagsAdapterLOG";
+//    private String TAG = "FlagsAdapterLOG";
 
     private static class FlagsViewHolder {
         ImageView imgv_flag;
         TextView countryName;
         TextView exchangeRate;
     }
-
-    //    private String TAG = "FlagsAdapterLOG";
     private Context mContext;
     private DatabaseReference mDataBaseRef;
     private StorageReference mStorageRef;
@@ -52,43 +48,6 @@ class FlagsAdapter extends BaseAdapter implements ICallback {
         mDataBaseRef = dBRef;
         mStorageRef = StorageRef;
         mRates = rates;
-
-//        ValueEventListener mVEventListener = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                ArrayList<String> currencyCode = new ArrayList<>();
-//                for (DataSnapshot snap : dataSnapshot.getChildren()) {
-//                    Log.d(TAG, "onDataChange: " + snap.child("CurrencyCode").getValue());
-//                    currencyCode.add(snap.child("CurrencyCode").getValue().toString());
-//                }
-//                AsyncHttpClient mAsyncHttpClient = new AsyncHttpClient();
-//                mAsyncHttpClient.get(mContext, getListUrl("EGP", currencyCode), new AsyncHttpResponseHandler() {
-//                    @Override
-//                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-//                        Gson gson = new Gson();
-//                        CurrencyModelList currencyModelList = gson.fromJson(new String(responseBody), CurrencyModelList.class);
-//                        ArrayList<RatesBean> rates = currencyModelList.getQuery().getResults().getRates();
-//                        Log.d(TAG, "onSuccess: " + rates.get(0).getRate());
-//
-//                        mRates.clear();
-//                        for (RatesBean rate : rates) {
-//                            mRates.add(rate.getRate());
-//                        }
-//                        Log.d(TAG, "onSuccess: mRates" + mRates);
-////                        notifyDataSetChanged();
-//                    }
-//
-//                    @Override
-//                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//            }
-//        };
-//        mDataBaseRef.child("countries").addListenerForSingleValueEvent(mVEventListener);
     }
 
     @Override
@@ -109,7 +68,6 @@ class FlagsAdapter extends BaseAdapter implements ICallback {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        Log.d(TAG, "getView: ");
         final FlagsViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new FlagsViewHolder();
@@ -142,12 +100,10 @@ class FlagsAdapter extends BaseAdapter implements ICallback {
                 // END loading Flags from firebase Storage
                 viewHolder.countryName.setText(countryName);
 
-                /****************Very very wrong and need to be replaced ASAP****************/
                 AsyncHttpClient mAsyncHttpClient = new AsyncHttpClient();
                 mAsyncHttpClient.get(mContext, getcurrencyExchangeUrl("EGP", currencyCode), new AsyncHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                        Log.d(TAG, "onSuccess: " + currencyCode);
                         Gson gson = new Gson();
                         CurrencyModel currencyModel = gson.fromJson(new String(responseBody), CurrencyModel.class);
                         final String rate = currencyModel.getQuery().getResults().getRates().getRate();
@@ -155,7 +111,6 @@ class FlagsAdapter extends BaseAdapter implements ICallback {
                     }
                     @Override
                     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                        Log.d(TAG, "onFailure: ");
                     }
                 });
                 /**************/
@@ -170,31 +125,9 @@ class FlagsAdapter extends BaseAdapter implements ICallback {
         return convertView;
     }
 
-    @Override
-    public void callback(ArrayList<RatesBean> rates) {
-        Log.d(TAG, "callback: ");
-        ArrayList<String> temp = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            temp.add(rates.get(i).getRate());
-        }
-        Log.d(TAG, "callback: " + mRates);
-        addAll(temp);
-    }
-
-    private void addAll(ArrayList<String> rates) {
-        if (rates == null) {
-            rates = new ArrayList<>();
-        }
-        Log.d(TAG, "addAll: rates" + rates);
-        mRates.clear();
-        mRates.addAll(rates);
-        Log.d(TAG, "addAll: mRates" + mRates);
-        notifyDataSetChanged();
-    }
-
     // called onStop of the activity
     void removeListeners() {
-        while (flagsEventListener != null) {
+        if (flagsEventListener != null) {
             mDataBaseRef.removeEventListener(flagsEventListener);
         }
     }

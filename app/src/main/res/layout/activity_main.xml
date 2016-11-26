@@ -8,6 +8,13 @@
     android:orientation="vertical"
     tools:context="com.currency.android.MainActivity">
 
+    <LinearLayout
+        android:background="#f1f1f1"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <EditText
         android:id="@+id/et_base_num"
         android:layout_width="match_parent"
@@ -49,18 +56,22 @@
             android:text="swap"
             android:background="@android:color/transparent"/>
 
-
-
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_target"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2">
             <AutoCompleteTextView
-                android:layout_weight="2"
                 android:id="@+id/actv_target"
+                android:textAppearance="?android:textAppearanceLarge"
                 android:completionThreshold="2"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/target"
                 android:inputType="text"
                 android:maxLength="3"
                 android:textAllCaps="true" />
+    </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 
     <TextView
@@ -73,6 +84,7 @@
         android:padding="16dp"
         android:textAppearance="?android:textAppearanceLarge"/>
 
+    </LinearLayout>
     <it.moondroid.coverflow.components.ui.containers.FeatureCoverFlow
         android:id="@+id/coverflow"
         android:layout_width="match_parent"

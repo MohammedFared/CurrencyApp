@@ -20,6 +20,7 @@ public class BaseActivity extends AppCompatActivity {
 
     private static String TAG = "BaseActivityLOG";
 
+
     protected StorageReference mStorageRef = FirebaseStorage.getInstance().getReference();
     protected DatabaseReference mDataBaseRef = FirebaseDatabase.getInstance().getReference();
 
