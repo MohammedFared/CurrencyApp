@@ -25,15 +25,6 @@ import cz.msebera.android.httpclient.Header;
 import it.moondroid.coverflow.components.ui.containers.FeatureCoverFlow;
 
 public class MainActivity extends BaseActivity implements TextWatcher {
-    //    EUR > EURU
-//    EUD > Australian Dollar
-//    CAD > Canadian Dollar
-//    CHF > Switzerland Franc
-//    HKD > Hong Kong Dollar
-//    SGD > Singapore dollar
-//    ZAR > South African Rand
-//    PHP > Philippine Peso
-
     String TAG = "MainActivityLOG";
     private EditText et_number_base;
     private AutoCompleteTextView actv_base, actv_target;
@@ -61,6 +52,8 @@ public class MainActivity extends BaseActivity implements TextWatcher {
         actv_base.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(3)});
         actv_target.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(3)});
 
+        Log.d(TAG, "onStart: "+ flagsSnapshot);
+
         actv_base.addTextChangedListener(this);
         actv_target.addTextChangedListener(this);
 
@@ -72,7 +65,8 @@ public class MainActivity extends BaseActivity implements TextWatcher {
         for (int i =0; i< 6; i++)
             rates.add("");
 
-        mAdapter = new FlagsAdapter(MainActivity.this, mDataBaseRef, mStorageRef, rates);
+        mAdapter = new FlagsAdapter(MainActivity.this, mDataBaseRef, mStorageRef, flagsSnapshot,
+                flagsExchangeRates);
         mCoverFlow.setAdapter(mAdapter);
 
 //        autoCompleteUsingFirebase();
@@ -153,6 +147,7 @@ public class MainActivity extends BaseActivity implements TextWatcher {
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                     et_number_base.setText("");
                     tv_number_target.setText("");
+                    Toast.makeText(MainActivity.this, "Failed to retrive data", Toast.LENGTH_LONG).show();
                     hideProgressDialog();
                 }
             });

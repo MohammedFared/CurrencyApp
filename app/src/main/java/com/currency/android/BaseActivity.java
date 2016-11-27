@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -20,6 +21,8 @@ public class BaseActivity extends AppCompatActivity {
 
     private static String TAG = "BaseActivityLOG";
 
+    public static DataSnapshot flagsSnapshot;
+    public static ArrayList<String> flagsExchangeRates;
 
     protected StorageReference mStorageRef = FirebaseStorage.getInstance().getReference();
     protected DatabaseReference mDataBaseRef = FirebaseDatabase.getInstance().getReference();

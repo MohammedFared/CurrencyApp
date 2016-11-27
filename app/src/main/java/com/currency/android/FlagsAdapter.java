@@ -9,22 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.currency.android.Models.CurrencyModel;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.gson.Gson;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.util.ArrayList;
-
-import cz.msebera.android.httpclient.Header;
-
-import static com.currency.android.BaseActivity.getcurrencyExchangeUrl;
 
 /**
  * Currency Created by Mohammed Fareed on 11/4/2016.
@@ -42,12 +33,15 @@ class FlagsAdapter extends BaseAdapter {
     private Context mContext;
     private DatabaseReference mDataBaseRef;
     private StorageReference mStorageRef;
+    private DataSnapshot mSnapshot;
 
-    FlagsAdapter(Context context, DatabaseReference dBRef, StorageReference StorageRef, ArrayList<String> rates) {
+    FlagsAdapter(Context context, DatabaseReference dBRef, StorageReference StorageRef,
+                 DataSnapshot snapshot, ArrayList<String> exchangeRates) {
         mContext = context;
         mDataBaseRef = dBRef;
         mStorageRef = StorageRef;
-        mRates = rates;
+        mSnapshot = snapshot;
+        mRates = exchangeRates;
     }
 
     @Override
@@ -82,46 +76,20 @@ class FlagsAdapter extends BaseAdapter {
             // View is being recycled, retrieve the viewHolder object from tag
             viewHolder = (FlagsViewHolder) convertView.getTag();
         }
-        /* Load the data from Firebase so the list can be updated without needing
-            to update the application */
-        flagsEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String flagKey = dataSnapshot.child("FlagKey").getValue() + ".png";
-                String countryName = dataSnapshot.child("CountryName").getValue() + "";
-                final String currencyCode = dataSnapshot.child("CurrencyCode").getValue().toString();
 
-                // Start loading the flags from Firebase Storage
-                StorageReference flagRef = mStorageRef.child("flags/" + flagKey);
-                Glide.with(mContext)
-                        .using(new FirebaseImageLoader())
-                        .load(flagRef)
-                        .into(viewHolder.imgv_flag);
-                // END loading Flags from firebase Storage
-                viewHolder.countryName.setText(countryName);
+        String flagKey = mSnapshot.child(position+"").child("FlagKey").getValue() + ".png";
+        String countryName = mSnapshot.child(position+"").child("CountryName").getValue().toString();
+        final String currencyCode = mSnapshot.child(position+"").child("CurrencyCode").getValue().toString();
 
-                AsyncHttpClient mAsyncHttpClient = new AsyncHttpClient();
-                mAsyncHttpClient.get(mContext, getcurrencyExchangeUrl("EGP", currencyCode), new AsyncHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                        Gson gson = new Gson();
-                        CurrencyModel currencyModel = gson.fromJson(new String(responseBody), CurrencyModel.class);
-                        final String rate = currencyModel.getQuery().getResults().getRates().getRate();
-                        viewHolder.exchangeRate.setText(rate + " " +currencyCode);
-                    }
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    }
-                });
-                /**************/
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        };
-        mDataBaseRef.child("countries").child(position + "").addListenerForSingleValueEvent(flagsEventListener);
-        /*END of loading from firebase*/
+        // Start loading the flags from Firebase Storage
+        StorageReference flagRef = mStorageRef.child("flags/" + flagKey);
+        Glide.with(mContext)
+                .using(new FirebaseImageLoader())
+                .load(flagRef)
+                .into(viewHolder.imgv_flag);
+        // END loading Flags from firebase Storage
+        viewHolder.countryName.setText(countryName);
+        viewHolder.exchangeRate.setText(mRates.get(position) + currencyCode);
         return convertView;
     }
 
