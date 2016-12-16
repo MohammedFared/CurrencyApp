@@ -8,12 +8,17 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.currency.android.Models.CurrencyModel;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -69,35 +74,37 @@ public class MainActivity extends BaseActivity implements TextWatcher {
                 flagsExchangeRates);
         mCoverFlow.setAdapter(mAdapter);
 
-//        autoCompleteUsingFirebase();
+        autoCompleteUsingFirebase();
     }
 
-//    private void autoCompleteUsingFirebase() {
-//        //Nothing special, create database reference.
-//        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-//        //Create a new ArrayAdapter with your context and the simple layout for the dropdown menu provided by Android
-//        final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-//        //Child the root before all the push() keys are found and add a ValueEventListener()
-//        database.child("currencies").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                //Basically, this says "For each DataSnapshot *Data* in dataSnapshot, do what's inside the method.
-//                for (DataSnapshot suggestionSnapshot : dataSnapshot.getChildren()){
-//                    //Get the suggestion by childing the key of the string you want to get.
-//                    String suggestion = suggestionSnapshot.child("CurrencyCode").getValue(String.class);
-//                    //Add the retrieved string to the list
-//                    autoComplete.add(suggestion);
-//                    autoComplete.notifyDataSetChanged();
-//                }
-//            }
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//        actv_base.setAdapter(autoComplete);
-//        actv_target.setAdapter(autoComplete);
-//    }
+    private void autoCompleteUsingFirebase() {
+        //Nothing special, create database reference.
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        //Child the root before all the push() keys are found and add a ValueEventListener()
+        database.child("currencies").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //Basically, this says "For each DataSnapshot *Data* in dataSnapshot, do what's inside the method.
+                ArrayList<String> data = new ArrayList<String>();
+                for (DataSnapshot suggestionSnapshot : dataSnapshot.getChildren()){
+                    //Get the suggestion by childing the key of the string you want to get.
+                    String suggestion = suggestionSnapshot.child("CurrencyCode").getValue(String.class);
+                    //Add the retrieved string to the list
+                    data.add(suggestion);
+                }
+                Toast.makeText(MainActivity.this, data.toString(), Toast.LENGTH_SHORT).show();
+                //Create a new ArrayAdapter with your context and the simple layout for the dropdown menu provided by Android
+                final ArrayAdapter<String> autoComplete = new ArrayAdapter<String>(MainActivity.this,
+                        android.R.layout.simple_list_item_1, data);
+                actv_base.setAdapter(autoComplete);
+                actv_target.setAdapter(autoComplete);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     private void onCurrencyChange() {
         if (validate()) {
